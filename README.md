@@ -9,9 +9,9 @@ i-i.f5.si
 などのドメインにしますと成功するでしょう。
 別にいいですが、他の人が使っているかどうかを十分に確認してから他の人に迷惑がかからないようご利用ください。
 また
-<a herf=https://ddns.kuku.lu/rule.php>これ</a>
+https://ddns.kuku.lu/rule.php
 を十分に読んでからご利用下さい。
-<a herf=https://ddns.kuku.lu/rule.php>これ</a>
+https://ddns.kuku.lu/rule.php
 に書いてあるルールを破るとi-i.f5.si以上のドメインが全て消える可能性があります。
 あなた含め最低でも3人に迷惑がかかります。
 i-i.f5.si
@@ -21,5 +21,5 @@ whpjt.f5.si
 注意!
 ドメインは全て私が優先されます。
 私に事前に申請することを推奨します。
-<a herf=https://scratch.mit.edu/projects/1054266415/>Application and Registration</a>
+https://scratch.mit.edu/projects/1054266415/
 ここから申請してください。
