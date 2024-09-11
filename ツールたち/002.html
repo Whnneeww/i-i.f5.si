@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>PNGからMP3を復元</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>PNGからMP3を復元</h1>
+    
+    <h2>PNGファイルを選択</h2>
+    <input type="file" id="pngFileInput" accept="image/png" />
+    <button id="restoreButton" disabled>MP3を復元</button>
+
+    <script>
+        console.log("スクリプトが正常に読み込まれました！");
+
+        // PNGデータからMP3を復元する関数
+        const restoreMp3FromPng = (pngData) => {
+            // PNGのデータはヘッダーが54バイト
+            const mp3StartIndex = 54;
+            const mp3Data = pngData.slice(mp3StartIndex);
+            return mp3Data;
+        };
+
+        // PNGファイルを読み取りMP3に復元する
+        document.getElementById('pngFileInput').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            document.getElementById('restoreButton').disabled = !file;
+        });
+
+        document.getElementById('restoreButton').addEventListener('click', async () => {
+            const pngFile = document.getElementById('pngFileInput').files[0];
+
+            if (pngFile) {
+                const pngReader = new FileReader();
+                pngReader.onload = (e) => {
+                    const pngData = new Uint8Array(e.target.result);
+                    const mp3Data = restoreMp3FromPng(pngData);
+
+                    // MP3ファイルとしてダウンロード
+                    const blob = new Blob([mp3Data], { type: 'audio/mp3' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'restored.mp3';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    alert("PNGファイルからMP3ファイルが復元されました！");
+                };
+                pngReader.readAsArrayBuffer(pngFile);
+            } else {
+                alert("PNGファイルが必要です！");
+            }
+        });
+    </script>
+</body>
+</html>
