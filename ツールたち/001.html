@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>MP3をPNGに変換</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>MP3をPNGに変換</h1>
+    
+    <h2>MP3ファイルを選択</h2>
+    <input type="file" id="mp3FileInput" accept="audio/mp3" />
+    <button id="convertButton" disabled>PNGに変換</button>
+
+    <script>
+        console.log("スクリプトが正常に読み込まれました！");
+
+        // MP3をバイナリデータに変換してPNGに埋め込む
+        const convertMp3ToPng = (mp3Data) => {
+            const width = 100; // PNGの幅
+            const height = Math.ceil(mp3Data.byteLength / width); // PNGの高さ
+            const pngData = new Uint8Array(54 + width * height * 4); // BMPヘッダーのサイズ + ピクセルデータ
+
+            // BMPヘッダーの設定
+            const header = new Uint8Array([
+                66, 77, // 'BM'
+                ...new Uint32Array([(pngData.length)]), // ファイルサイズ
+                0, 0, 54, 0, // 予約領域やヘッダーサイズ
+                40, 0, 0, 0, width, 0, height, 0, 1, 0, 32, 0 // DIBヘッダー
+            ]);
+
+            // ヘッダーをPNGデータに埋め込む
+            pngData.set(header);
+
+            // MP3データをピクセルに変換
+            for (let i = 0; i < mp3Data.byteLength; i++) {
+                const pixelIndex = 54 + i * 4; // ピクセルデータの開始位置
+                if (pixelIndex < pngData.length) {
+                    pngData[pixelIndex] = mp3Data[i]; // 赤チャネル
+                    pngData[pixelIndex + 1] = mp3Data[i]; // 緑チャネル
+                    pngData[pixelIndex + 2] = mp3Data[i]; // 青チャネル
+                    pngData[pixelIndex + 3] = 255; // アルファ（不透明）
+                }
+            }
+
+            return pngData;
+        };
+
+        // MP3ファイルを読み取ってPNGに変換する
+        document.getElementById('mp3FileInput').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            document.getElementById('convertButton').disabled = !file;
+        });
+
+        document.getElementById('convertButton').addEventListener('click', async () => {
+            const mp3File = document.getElementById('mp3FileInput').files[0];
+
+            if (mp3File) {
+                const mp3Reader = new FileReader();
+                mp3Reader.onload = (e) => {
+                    const mp3Data = new Uint8Array(e.target.result);
+                    const pngData = convertMp3ToPng(mp3Data);
+
+                    // PNGファイルとしてダウンロード
+                    const blob = new Blob([pngData], { type: 'image/png' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'output.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    alert("MP3ファイルがPNGファイルに変換されました！");
+                };
+                mp3Reader.readAsArrayBuffer(mp3File);
+            } else {
+                alert("MP3ファイルが必要です！");
+            }
+        });
+    </script>
+</body>
+</html>
